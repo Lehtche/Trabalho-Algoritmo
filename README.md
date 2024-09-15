@@ -1,2 +1,4 @@
-# Olá,Mundo!
- primeiro repositorio de Git e Github e agora to editando :D
+# Trabalho Algoritmo
+ Algoritmos e Programação Estruturada
+Trabalho em Grupo N1
+
