@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 #include <locale.h>
+
 double calculo_func(int x, double b) {
     double a0 = 186752;
     double a1 = -148235;
@@ -11,50 +13,59 @@ double calculo_func(int x, double b) {
     double a5 = -0.00513554;
     double a6 = 0.0000735464;
     double a7 = -4.22038e-7;
-    return a0 + (a1 + b) * x + a2 * pow(x, 2) + a3 * pow(x, 3) + a4 * pow(x, 4) + 
-           a5 * pow(x, 5) + a6 * pow(x, 6) + a7 * pow(x, 7);
-
+    return round(a0 + (a1 + b) * x + a2 * x * x + a3 * x * x * x +
+                 a4 * pow(x, 4) + a5 * pow(x, 5) + a6 * pow(x, 6) + a7 * pow(x, 7));
 }
-int main() {
-    char MsgHex[100]; 
-    int x = 1;  
-    double b; 
-    int i;
-    setlocale(LC_ALL, "Portuguese");
-    
-	printf("===========================================================================\n");
-	printf("                    Decodifica��o de C�digo Hexadecimal                    \n");
-    printf("Digite o valor de b: ");
-    scanf("%lf", &b);
-    
-    	while (1) {
-       	printf("Digite a mensagem em hexadecimal (at� 50 caracteres): ");
-        scanf("%s", MsgHex);
-    	if (strlen(MsgHex) < 51) {
-            break;
-        }else {
-            printf("Erro!! A mensagem deve ter at� 50 caracteres.\n Tente novamente.\n");
-        }
-    }
-    for (i = 0; i < strlen(MsgHex); i += 2) { //Passa pela MsgHex 2 caracteres por vez, formando um par
-    	//converte par para valor inteiro
-        char hexPar[3] = {MsgHex[i], MsgHex[i+1], '\0'};
-        int Ascii = (int)strtol(hexPar, NULL, 16); 
 
-        if (Ascii == 0) {
-        	printf("\nCaractere Nulo!!\n");
-            break;
-        }
-        
-        double resultFun = calculo_func(x, b);//recebe o resultado do calculo da fun��o
-        
-        if (resultFun == (int)resultFun) { //se o resultado for inteiro, ignora o caractere 
-            x++; 
-            continue;
-        }
-        x++;
+int main() {
+	setlocale(LC_ALL, "Portuguese");
+    int num_msg , m, i;
+    printf("===========================================================================\n");
+	printf("                    Decodificação de Código Hexadecimal                    \n");
+    printf("Digite o número de mensagens (1 a 10000): ");
+    scanf("%d", &num_msg);
+    
+    if (num_msg < 1 || num_msg > 10000) {
+        printf("Número de mensagens inválido.\n");
+        return 1;
     }
-    printf("\nDecofidica��o Completa!!\n");
-  	printf("\n===========================================================================\n"); 
+    
+    for ( m = 0; m < num_msg; m++) {
+        double b;
+        char MsgHexa[101]; // até 100 caracteres + 1 para o nulo
+
+        printf("Digite o valor de b: ");
+        scanf("%lf", &b);
+        printf("Digite a mensagem em hexadecimal (máx 100 caracteres): ");
+        scanf("%s", MsgHexa);
+
+        int x = 1; // Posição do caractere, começando em 1
+        for ( i = 0; i < strlen(MsgHexa); i += 2) {
+            // Verifica se ainda há pares para processar
+            if (i + 1 >= strlen(MsgHexa)) {
+                break;
+            }
+
+            // Converte os dois caracteres hexadecimais para um inteiro
+            char hex_par[3] = {MsgHexa[i], MsgHexa[i + 1], '\0'};
+            int Ascii = (int)strtol(hex_par, NULL, 16);
+
+            // Ignora caracteres inválidos
+            if (Ascii == 0) {
+                continue;
+            }
+
+            // Aplica a função de validação
+            double resultado = calculo_func(x, b);
+            if (resultado != 0) {
+                printf("%c", (char)Ascii);
+            }
+            x++;
+        }
+        printf("\n");
+    }
+  	printf("\nDecofidicação Completa!!\n");
+  	printf("\n===========================================================================\n");  
+
     return 0;
 }
